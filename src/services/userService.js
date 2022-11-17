@@ -1,5 +1,6 @@
 import db from '../models/index';
 import bcrypt from 'bcryptjs';
+import emailService from '../services/emailService';
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -24,7 +25,7 @@ let handleUserLogin = (email, password) => {
 				//user already exists
 				//compare password
 				let user = await db.User.findOne({
-					attributes: [ 'email', 'roleID', 'password' ],
+					attributes: [ 'email', 'roleID', 'password', 'firstName', 'lastName' ],
 					where: { email: email },
 					raw: true
 				});
@@ -119,9 +120,10 @@ let createNewUser = (data) => {
 					firstName: data.firstName,
 					lastName: data.lastName,
 					address: data.address,
-					phonenumber: data.phoneNumber,
-					gender: data.gender === '1' ? true : false,
-					roleid: data.roleID
+					phonenumber: data.phonenumber,
+					gender: data.gender,
+					roleid: data.roleid,
+					img: data.avatar
 				});
 				resolve({
 					errCode: 0,
@@ -165,7 +167,7 @@ let deleteUser = (userId) => {
 let updateUserData = (data) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			if (!data.id) {
+			if (!data.id || !data.roleid || !data.gender) {
 				resolve({
 					errCode: 2,
 					message: 'Missing required parameter'
@@ -179,6 +181,12 @@ let updateUserData = (data) => {
 				user.firstName = data.firstName;
 				user.lastName = data.lastName;
 				user.address = data.address;
+				user.roleid = data.roleid;
+				user.phonenumber = data.phonenumber;
+				user.gender = data.gender;
+				if (data.avatar) {
+					user.img = data.avatar;
+				}
 
 				await user.save();
 
@@ -197,10 +205,57 @@ let updateUserData = (data) => {
 		}
 	});
 };
+
+let getAllCodeService = (typeInput) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			if (!typeInput) {
+				resolve({
+					errCode: 1,
+					errMessage: 'Missing require parameter'
+				});
+			} else {
+				let res = {};
+				let allcode = await db.AllCodes.findAll({
+					where: { type: typeInput }
+				});
+				res.errCode = 0;
+				res.data = allcode;
+				resolve(res);
+			}
+		} catch (e) {
+			reject(e);
+		}
+	});
+};
+
+let sendOrderMail = (email) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			if (!email) {
+				resolve({
+					errCode: 1,
+					errMessage: 'Missing required parameter'
+				});
+			} else {
+				await emailService.sendEasyEmail(email);
+				resolve({
+					errCode: 0,
+					errMessage: 'Da gui mail thanh cong'
+				});
+			}
+		} catch (e) {
+			reject(e);
+		}
+	});
+};
+
 module.exports = {
 	handleUserLogin: handleUserLogin,
 	getAllUsers: getAllUsers,
 	createNewUser: createNewUser,
 	deleteUser: deleteUser,
-	updateUserData: updateUserData
+	updateUserData: updateUserData,
+	getAllCodeService: getAllCodeService,
+	sendOrderMail: sendOrderMail
 };

@@ -12,7 +12,7 @@ let createNewUser = async (data) => {
 				firstName: data.firstName,
 				lastName: data.lastName,
 				address: data.address,
-				phonenumber: data.phoneNumber,
+				phonenumber: data.phonenumber,
 				gender: data.gender === '1' ? true : false,
 				roleid: data.roleID
 			});

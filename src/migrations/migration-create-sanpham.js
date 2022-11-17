@@ -1,36 +1,33 @@
 'use strict';
 module.exports = {
-	// maSP: DataTypes.STRING,
-	// 		tenSP: DataTypes.STRING,
-	// 		gia: DataTypes.INTEGER,
-	// 		kichCo: DataTypes.STRING,
-	// 		moTa: DataTypes.BOOLEAN,
-	// 		danhMuc: DataTypes.STRING
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.createTable('Sanpham', {
+		await queryInterface.createTable('Product', {
 			id: {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
 				type: Sequelize.INTEGER
 			},
-			maSP: {
+			productId: {
 				type: Sequelize.STRING
 			},
-			tenSP: {
+			productName: {
 				type: Sequelize.STRING
 			},
-			gia: {
+			price: {
 				type: Sequelize.INTEGER
 			},
-			kichCo: {
+			size: {
 				type: Sequelize.STRING
 			},
-			moTa: {
+			describe: {
 				type: Sequelize.STRING
 			},
-			danhMuc: {
+			category: {
 				type: Sequelize.STRING
+			},
+			image: {
+				type: Sequelize.BLOB('long')
 			},
 			createdAt: {
 				allowNull: false,
@@ -43,6 +40,6 @@ module.exports = {
 		});
 	},
 	down: async (queryInterface, Sequelize) => {
-		await queryInterface.dropTable('Sanpham');
+		await queryInterface.dropTable('Product');
 	}
 };

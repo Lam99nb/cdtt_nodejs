@@ -1,4 +1,5 @@
 import userService from '../services/userService';
+import emailService from '../services/emailService';
 
 let handleLogin = async (req, res) => {
 	let email = req.body.email;
@@ -60,10 +61,38 @@ let handleEditUser = async (req, res) => {
 	return res.status(200).json(message);
 };
 
+let getAllCode = async (req, res) => {
+	try {
+		let data = await userService.getAllCodeService(req.query.type);
+		console.log(data);
+		return res.status(200).json(data);
+	} catch (e) {
+		return res.status(200).json({
+			errCode: -1,
+			errMessage: 'Lỗi từ server'
+		});
+	}
+};
+
+let sendOrderMail = async (req, res) => {
+	try {
+		let email = req.body.email;
+		let message = await emailService.sendEasyEmail(email);
+		return res.status(200).json(message);
+	} catch (e) {
+		console.log(e);
+		return res.status(200).json({
+			errCode: -1,
+			errMessage: 'Lỗi gửi email từ server'
+		});
+	}
+};
 module.exports = {
 	handleLogin: handleLogin,
 	handleGetAllUsers: handleGetAllUsers,
 	handleCreateNewUser: handleCreateNewUser,
 	handleEditUser: handleEditUser,
-	handleDeleteUser: handleDeleteUser
+	handleDeleteUser: handleDeleteUser,
+	getAllCode: getAllCode,
+	sendOrderMail: sendOrderMail
 };
